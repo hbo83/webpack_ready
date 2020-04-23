@@ -1,0 +1,115 @@
+Toto je pripravenej projekt pres webpack, tenhle prazdnej projekt muze pouzit pro dalsi pluginy
+
+zde je postup:
+
+1. vytvor slozku s projektem => mkdir mujprojekt
+2. vlez do slozky => cd myprojekt
+3. inicializuj npmko => npm init -y ( to -y znamena yes, jako ze to vseko nemusis potvrzovat postupne enterem a nastavi se default hodnoty )
+4. nainstaluj webpack a webpack-cli => npm i --save--dev webpack webpack-cli (--save uz se v novem npm nepouziva, --dev je dependence jen pro vyvoj)
+5. nainstaluj lodash => npm install --save lodash (to je nakej framework zajistujici modularitu a jeste neco)
+6. vytvor slozku src => mkdir src
+7. v ni vytvor index.js => to je entry point pro webpack
+
+import _ from 'lodash';
+function component() {
+  const element = document.createElement('div');
+  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+  return element;
+}
+document.body.appendChild(component());
+
+8. v package.json pridej klic a hodnotu "private": true a odeber "main": "index.js"
+9. ve slozce /dist vytvor index.html
+
+<!doctype html>
+  <html>
+   <head>
+     <title>Getting Started</title>
+   </head>
+   <body>
+     <script src="main.js"></script>
+   </body>
+  </html>
+
+10. v root folderu vytvorime konfigurak webpacku => webpack.config.js
+
+const path = require('path');
+
+module.exports = {
+  mode: 'development', => pridame dev mode, pro vyvoj
+  entry: './src/index.js',
+  output: {
+    filename: 'main.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+};
+
+11. pridame npm prikaz scripts v package.json => "build": "webpack" (to nahradi prikaz npx webpack)
+
+takze struktura projektu vypada takto:
+
+webpack-demo
+|- package.json
+|- webpack.config.js
+|- /dist
+  |- main.js
+  |- index.html
+|- /src
+  |- index.js
+|- /node_modules
+
+////////////////////dal pokracujeme v assets management/////////////////////////////////////
+
+12. potrebujeme css loader => npm i --save-dev style-loader css-loader
+13. ve webpack.config.js pridame moduly
+
+const path = require('path');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist'),
+    },
++   module: {
++     rules: [
++       {
++         test: /\.css$/,
++         use: [
++           'style-loader',
++           'css-loader',
++         ],
++       },
++     ],
++   },
+  };
+
+14. v /src vytvorime style.css soubor se stylama
+15. v /src index.js tyto styly naimportujeme a pridame to classlistu 
+
+ import _ from 'lodash';
++ import './style.css';
+
+  function component() {
+    const element = document.createElement('div');
+
+    // Lodash, now imported by this script
+    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
++   element.classList.add('hello');
+
+    return element;
+  }
+
+  document.body.appendChild(component());
+
+16. Nainstaluj file-loader => npm install --save-dev file-loader
+17. v /src index.js teno img naimportujeme a priradime ke komponente
+
++ import Icon from './icon.png';
+ const myIcon = new Image();
++   myIcon.src = Icon;
++
++   element.appendChild(myIcon);
+
+zbytek priste mozna dopisu, ale spis si delam poznamky primo do kodu
+188. HMR - hot module replacement
